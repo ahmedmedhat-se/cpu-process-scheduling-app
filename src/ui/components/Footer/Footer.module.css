@@ -1,6 +1,7 @@
 .footer {
   border-top: 1px solid var(--border-subtle);
-  background-color: var(--surface-panel);
+  background-color: var(--bg-surface);
+  flex-shrink: 0;
 }
 
 .inner {
@@ -8,21 +9,81 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 1600px;
+  max-width: 1520px;
   margin: 0 auto;
-  padding: 0 1.5rem;
-  height: 44px;
+  padding: 0 var(--space-5);
+  height: 48px;
   font-size: 0.72rem;
   color: var(--text-tertiary);
 }
 
-.meta {
+.left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.lab {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.sep {
+  color: var(--text-muted);
+}
+
+.version {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
+.right {
+  display: flex;
+  align-items: center;
+}
+
+.tick {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+}
+
+.tickDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+}
+
+.tickDot[data-finished="true"] {
+  background-color: var(--accent-warning);
+}
+
+/* Responsive */
 @media (max-width: 640px) {
   .inner {
-    padding: 0 1rem;
+    height: 42px;
+    padding: 0 var(--space-3);
+    font-size: 0.65rem;
+  }
+
+  .lab {
+    display: none;
+  }
+
+  .sep {
+    display: none;
+  }
+
+  .version {
+    font-size: 0.62rem;
+  }
+
+  .tick {
+    font-size: 0.62rem;
   }
 }

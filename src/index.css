@@ -1,22 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
 :root {
-  --surface-base: #0b1220;
-  --surface-panel: #131c2e;
-  --surface-elevated: #1c2740;
-  --surface-hover: #243250;
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-strong: rgba(255, 255, 255, 0.13);
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-tertiary: #64748b;
-  --accent-primary: #6366f1;
-  --accent-primary-hover: #4f46e5;
-  --accent-warning: #f59e0b;
-  --accent-success: #22c55e;
-  --accent-danger: #ef4444;
+  /* Backgrounds */
+  --bg-base: #08090A;
+  --bg-surface: #111318;
+  --bg-elevated: #181B22;
+  --bg-hover: #1F2330;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Text */
+  --text-primary: #F7F8F8;
+  --text-secondary: #D0D6E0;
+  --text-tertiary: #8A8F98;
+  --text-muted: #62666D;
+
+  /* Accent — single indigo, used sparingly */
+  --accent-primary: #5E6AD2;
+  --accent-primary-hover: #7170FF;
+  --accent-success: #27A644;
+  --accent-warning: #F59E0B;
+  --accent-danger: #EF4444;
+
+  /* Typography */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Berkeley Mono", ui-monospace, "SF Mono", "Cascadia Code", monospace;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Radius */
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --font-mono: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 * {
@@ -26,16 +50,25 @@
 html,
 body {
   margin: 0;
-  background-color: var(--surface-base);
+  background-color: var(--bg-base);
   color: var(--text-primary);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv01", "ss03";
 }
 
 button:focus-visible,
-a:focus-visible {
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
+}
+
+::selection {
+  background-color: rgba(94, 106, 210, 0.35);
+  color: var(--text-primary);
 }

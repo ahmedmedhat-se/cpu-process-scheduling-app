@@ -1,13 +1,13 @@
-v.legend {
+.legend {
   display: flex;
-  gap: 0.85rem;
+  gap: var(--space-3);
 }
 
 .legendItem {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.68rem;
+  gap: var(--space-1);
+  font-size: 0.72rem;
   color: var(--text-tertiary);
 }
 
@@ -19,9 +19,9 @@ v.legend {
 
 .track {
   display: flex;
-  min-height: 52px;
+  min-height: 48px;
   gap: 2px;
-  padding-bottom: 0.25rem;
+  padding-bottom: var(--space-1);
   overflow-x: auto;
 }
 
@@ -30,18 +30,18 @@ v.legend {
   align-items: center;
   justify-content: center;
   min-width: 44px;
-  border-radius: 4px;
-  transition: opacity 0.15s ease;
+  border-radius: 3px;
+  transition: opacity 150ms ease-out;
 }
 
 .segment:hover {
-  opacity: 0.82;
+  opacity: 0.85;
 }
 
 .label {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: white;
   white-space: nowrap;
-  padding: 0 6px;
+  padding: 0 var(--space-1);
 }

@@ -1,215 +1,310 @@
 # CPU Process Scheduling Simulator
-
+A web-based educational application that simulates CPU scheduling algorithms, visualizes execution as Gantt charts, and compares algorithm performance on the same workload.
+ 
 > Developed by **Ahmed Medhat**
 > Researched/Documented by **Daniel Emad** & **Kareem Majed**
-
-**Project type:** Interactive Simulation Application
-**Course:** Operating Systems
-**Status:** Project Proposal
-
+ 
 ---
 ## Table of Contents
 - [Overview](#overview)
-- [Problem Statement](#problem-statement)
-- [What the Simulator Does](#what-the-simulator-does)
-- [Project Objectives](#project-objectives)
-- [Scope and Limitations](#scope-and-limitations)
-- [Scheduling Algorithms](#scheduling-algorithms)
-- [How the Simulation Works](#how-the-simulation-works)
-- [System Architecture](#system-architecture)
-- [Planned Visualization](#planned-visualization)
-- [Performance Metrics](#performance-metrics)
-- [Testing Plan](#testing-plan)
+- [Features](#features)
 - [Technology Stack](#technology-stack)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
-- [Implementation Roadmap](#implementation-roadmap)
-- [Expected Outcome](#expected-outcome)
-- [Future Enhancements](#future-enhancements)
+- [Available Scripts](#available-scripts)
+- [Scheduling Rules](#scheduling-rules)
+- [Performance Metrics](#performance-metrics)
+- [Roadmap](#roadmap)
 - [License](#license)
-
 ---
 ## Overview
-The CPU Process Scheduling Simulator is a software tool for visualizing and comparing CPU scheduling algorithms. Multiple processes compete for limited CPU time, and the operating system needs a strategy to decide **which process runs, when it runs, and for how long**. This project lets users define a workload, run it through different scheduling strategies, and observe the results interactively.
-
-The application **simulates scheduling behavior using a virtual clock — it does not run actual OS processes.**
-
+Users define a process workload, configure scheduling parameters, run a simulation, and inspect the resulting execution timeline and metrics. The application simulates scheduling behavior with a virtual clock; it does not run real operating-system processes. It is entirely client-side, with no backend and no database.
+ 
+## Features
+- Four scheduling algorithms: FCFS, SJF, Round Robin, and Priority.
+- Step-by-step and continuous simulation with run, pause, step, and reset controls.
+- Gantt chart built from coalesced timeline segments (execution, idle, context switch).
+- Configurable context-switch overhead and Round Robin time quantum.
+- Computed metrics: waiting, turnaround, and response time, CPU utilization, throughput, and context switches.
+- Dark-themed dashboard layout.
+## Technology Stack
+| Technology | Version | Role |
+|---|---|---|
+| React | `<from package.json>` | UI library |
+| TypeScript | `<from package.json>` | Language |
+| Vite | `<from package.json>` | Build tool and dev server |
+| Bootstrap | 5.x | Layout and components |
+| Bootstrap Icons | `<from package.json>` | Iconography |
+| Vitest | `<from package.json>` | Test framework (configuration in progress) |
+| Git / GitHub | — | Version control |
+ 
+## Architecture
+The project uses a layered architecture in which dependencies point inward only: UI depends on the engine, the engine depends on the domain, and the domain depends on nothing.
+ 
 ```bash
-Processes                 Ready Queue                  CPU
-Browser • Editor   ───►   Processes waiting   ───►   One process executes
-Music • Background        for CPU allocation          at a time per core
+┌──────────────────────────────────────────────┐
+│ UI Layer          src/ui/                    │  React components, useSimulation hook
+├──────────────────────────────────────────────┤
+│ Engine Layer      src/engine/                │  Simulation engine, policies, metrics
+├──────────────────────────────────────────────┤
+│ Domain Layer      src/domain/                │  Pure types, no logic, no dependencies
+└──────────────────────────────────────────────┘
+        dependencies point downward (inward) only
 ```
-
-## Problem Statement
-Scheduling decisions directly affect system performance, but the topic is hard to grasp from theory alone:
-
-| Challenge | Description |
-|---|---|
-| **Different algorithms** | Each scheduling approach makes different decisions and introduces different trade-offs. |
-| **Hard to visualize** | The behavior of queues, preemption, and context switches is difficult to understand from theory alone. |
-| **Hard to compare** | Waiting, turnaround, and response times vary by algorithm and workload. |
-
-This project provides an interactive way to **simulate, observe, and compare** scheduling behavior.
-
-## What the Simulator Does
-| Step | Action | Description |
+ 
+| Layer | Location | Responsibility |
 |---|---|---|
-| 1 | **Create processes** | Enter arrival time, burst time, and priority. |
-| 2 | **Configure** | Choose an algorithm and simulation settings. |
-| 3 | **Simulate** | Observe scheduling decisions and CPU execution. |
-| 4 | **Analyze** | Compare metrics and execution timelines. |
-
-## Project Objectives
-- Implement and simulate multiple CPU scheduling algorithms.
-- Allow users to configure process workloads and scheduling parameters.
-- Visualize process execution using a Gantt chart.
-- Model context switching with configurable overhead.
-- Calculate standard performance metrics.
-- Compare algorithms using the same workload.
-- Provide an interactive learning and experimentation environment.
-
-## Scope and Limitations
-The simulation focuses on a **single CPU core** and a **single CPU burst per process**.
-| Included | Out of scope (initial version) |
-|---|---|
-| FCFS (First Come, First Served) | Real OS process execution |
-| SJF (Shortest Job First, non-preemptive) | Multiple CPU cores |
-| Round Robin (configurable time quantum) | Process I/O blocking |
-| Priority Scheduling (non-preemptive) | Full operating-system implementation |
-| Process arrivals and ready queue | |
-| Configurable context-switch overhead | |
-| Gantt chart, metrics, and comparison | |
-
-## Scheduling Algorithms
-| Algorithm | Type | Scheduling decision |
-|---|---|---|
-| **FCFS** | Non-preemptive | Execute in arrival / queue order |
-| **SJF** | Non-preemptive | Choose the shortest available burst |
-| **Round Robin** | Preemptive | Rotate after each time quantum |
-| **Priority** | Non-preemptive | Choose highest priority (lower number = higher priority) |
-
-All algorithms use the **same input workload** when comparing results.
-
-## How the Simulation Works
-The same workflow supports every scheduling algorithm:
-
-```mermaid
-flowchart LR
-    A[Input<br/>Define processes] --> B[Configure<br/>Algorithm and settings]
-    B --> C[Initialize<br/>Ready queue and clock]
-    C --> D[Schedule<br/>Select next process]
-    D --> E[Execute<br/>Advance virtual time]
-    E --> F[Analyze<br/>Metrics and timeline]
-    E -. next decision .-> D
-```
-
-A **virtual clock** models process execution and scheduling events, including arrivals, preemption, idle periods, and context switches.
-
-## System Architecture
-Three logical layers keep the simulator organized:
-
+| **Domain** | `src/domain/` | Pure TypeScript types with zero logic and zero external dependencies: `process.ts`, `simulation.ts`, `timeline.ts`, `metrics.ts`. |
+| **Engine** | `src/engine/` | Pure TypeScript simulation engine, independent of React. `SimulationEngine` is a state machine with step, run, and reset. Scheduling decisions are delegated to interchangeable policies. `TimelineRecorder` coalesces adjacent ticks into Gantt segments. `computeMetrics` is a pure function over the finished simulation. |
+| **UI** | `src/ui/` | React components only. The `useSimulation` hook owns a `SimulationEngine` instance and exposes run, pause, step, and reset controls to the components. |
+ 
+### Dependency Graph
 ```mermaid
 flowchart TB
-    P["Presentation Layer<br/>Process input • Controls • Gantt chart • Results dashboard"]
-    E["Simulation Engine<br/>Virtual clock • Ready queue • Process state • Context switches"]
-    A["Scheduling Algorithms<br/>FCFS • SJF • Round Robin • Priority"]
-    P --> E --> A
+    subgraph UI["UI Layer — src/ui/"]
+        C["React components<br/>Header • Sidebar • Gantt chart • Metrics dashboard"]
+        H["useSimulation hook<br/>run • pause • step • reset"]
+    end
+    subgraph ENG["Engine Layer — src/engine/"]
+        SE["SimulationEngine<br/>state machine"]
+        POL["Scheduling policies<br/>FCFS • SJF • Round Robin • Priority"]
+        TR["TimelineRecorder"]
+        CM["computeMetrics"]
+    end
+    subgraph DOM["Domain Layer — src/domain/"]
+        T["process.ts • simulation.ts<br/>timeline.ts • metrics.ts"]
+    end
+    C --> H
+    H --> SE
+    SE --> POL
+    SE --> TR
+    SE --> CM
+    SE --> T
+    POL --> T
+    TR --> T
+    CM --> T
 ```
-
-| Layer | Responsibility |
-|---|---|
-| **Presentation Layer** | Displays results: process input, controls, Gantt chart, and results dashboard. |
-| **Simulation Engine** | Manages simulation state: virtual clock, ready queue, process states, and context switches. |
-| **Scheduling Algorithms** | Make the scheduling decisions: FCFS, SJF, Round Robin, and Priority. |
-
-## Planned Visualization
-The interface centers on an interactive Gantt chart (illustrative example below):
-
+ 
+### Engine Components
+```mermaid
+classDiagram
+    class SimulationEngine {
+        step()
+        run()
+        reset()
+    }
+    class SchedulingPolicy {
+        <<interface>>
+    }
+    class FCFS
+    class SJF
+    class RoundRobin
+    class Priority
+    class TimelineRecorder
+    class computeMetrics {
+        <<pure function>>
+    }
+    SimulationEngine --> SchedulingPolicy : delegates selection
+    SimulationEngine --> TimelineRecorder : records ticks
+    SimulationEngine ..> computeMetrics : results feed
+    SchedulingPolicy <|.. FCFS
+    SchedulingPolicy <|.. SJF
+    SchedulingPolicy <|.. RoundRobin
+    SchedulingPolicy <|.. Priority
+```
+ 
+### Runtime Interaction
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as React components
+    participant Hook as useSimulation
+    participant Engine as SimulationEngine
+    participant Policy as SchedulingPolicy
+    participant Rec as TimelineRecorder
+    participant Met as computeMetrics
+ 
+    User->>UI: Press Run / Step
+    UI->>Hook: run() / step()
+    loop each tick
+        Hook->>Engine: step()
+        Engine->>Policy: select next process
+        Policy-->>Engine: chosen process
+        Engine->>Rec: record tick (run / idle / switch)
+    end
+    Engine-->>Hook: updated simulation state
+    Hook->>Met: compute metrics
+    Met-->>Hook: metrics result
+    Hook-->>UI: state, timeline, metrics
+    UI-->>User: Gantt chart and dashboard update
+```
+ 
+## Project Structure
 ```bash
-| P1 | P2 | P3 | P1 | P2 |
-0    1    2    3    4    5 ...
+.
+├── src/
+│   ├── domain/
+│   │   ├── process.ts
+│   │   ├── simulation.ts
+│   │   ├── timeline.ts
+│   │   └── metrics.ts
+│   ├── engine/
+│   │   ├── SimulationEngine.ts        # state machine: step / run / reset
+│   │   ├── policies/
+│   │   │   ├── SchedulingPolicy.ts    # policy interface
+│   │   │   ├── fcfs.ts
+│   │   │   ├── sjf.ts
+│   │   │   ├── roundRobin.ts
+│   │   │   └── priority.ts
+│   │   ├── timeline/
+│   │   │   └── TimelineRecorder.ts    # coalesces ticks into Gantt segments
+│   │   └── metrics/
+│   │       └── computeMetrics.ts      # pure metrics function
+│   └── ui/
+│       ├── useSimulation.ts           # hook wrapping SimulationEngine
+│       └── ...                        # layout, Gantt chart, metrics dashboard
+├── index.html
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
 ```
-
-| Component | Details |
-|---|---|
-| **Simulation controls** | Start • Pause • Step • Reset |
-| **Process states** | Ready • Running • Completed |
-| **Timeline** | Execution • Idle • Context switch |
-
-> The visualization above is a mockup. The final design will be developed during implementation.
-
-## Performance Metrics
-Per-process values and averages are calculated for every run.
-
-| Metric | Definition |
-|---|---|
-| **Waiting Time** | Time spent waiting in the ready queue |
-| **Turnaround Time** | Completion time − arrival time |
-| **Response Time** | First CPU start − arrival time |
-| **CPU Utilization** | CPU execution time ÷ elapsed time |
-| **Throughput** | Completed processes ÷ elapsed time |
-| **Context Switches** | Number of CPU context transitions |
-
-## Testing Plan
-| Test scenario | Validation |
-|---|---|
-| Single process | Correct execution and metrics |
-| Same arrival time | Correct selection and tie-breaking |
-| Different arrival times | Arrival handling and idle periods |
-| Round Robin with small quantum | Correct rotation and remaining time |
-| Equal burst / priority | Consistent tie-breaking |
-| Context-switch cost | Overhead reflected in the timeline |
-| Invalid input | Validation and clear error feedback |
-
-## Technology Stack
-| Layer | Technology |
-|---|---|
-| Presentation | _TBD_ |
-| Simulation engine | _TBD_ |
-| Testing | _TBD_ |
-
+ 
 ## Getting Started
+### Prerequisites
+| Tool | Notes |
+|---|---|
+| Node.js | Current LTS recommended |
+| npm | Bundled with Node.js |
+ 
+### Installation and Run
 ```bash
 git clone <repository-url>
-cd cpu-process-scheduling-simulator
-
-# install dependencies
-# run the application
-# run the tests
+cd <repository-folder>
+ 
+npm install
+npm run dev
+```
+The development server prints the local URL (Vite default: `http://localhost:5173`).
+ 
+## Available Scripts
+| Script | Purpose |
+|---|---|
+| `npm run dev` | Start the Vite development server |
+| `npm run build` | Type-check and create a production build |
+| `npm run preview` | Preview the production build locally |
+| `npm run test` | Run the Vitest suite (configuration in progress) |
+ 
+## Scheduling Rules
+The engine follows the behavior contract below. Policies and tests should treat it as the specification.
+ 
+### Algorithms
+| Algorithm | Type | Selection rule |
+|---|---|---|
+| FCFS | Non-preemptive | Earliest arrival first |
+| SJF | Non-preemptive | Shortest burst among arrived processes |
+| Round Robin | Preemptive | Rotate after each time quantum (configurable) |
+| Priority | Non-preemptive | Lowest numerical value = highest priority |
+ 
+### Behavior Contract
+| Rule | Behavior |
+|---|---|
+| CPU model | Single core, one CPU burst per process |
+| Time | Integer time units only; no fractional times |
+| Tie-breaking | Earlier arrival wins; on equal arrival, input order wins |
+| Idle CPU | When the ready queue is empty the CPU is idle; idle ticks are recorded in the timeline |
+| Context switch | Overhead is configurable and is counted as non-useful time for CPU utilization |
+ 
+### Process State Model
+```mermaid
+stateDiagram-v2
+    [*] --> NotArrived
+    NotArrived --> Ready : arrival time reached
+    Ready --> Running : selected by policy
+    Running --> Ready : quantum expired (Round Robin)
+    Running --> Completed : remaining burst = 0
+    Completed --> [*]
+```
+ 
+### Simulation Tick Flow
+```mermaid
+flowchart TD
+    A([Start tick]) --> B[Move newly arrived processes to the ready queue]
+    B --> C{Ready queue empty<br/>and no running process?}
+    C -- Yes --> D[Record idle tick]
+    C -- No --> E{Process needs<br/>to be selected?}
+    E -- Yes --> F[Policy selects next process<br/>tie-break: arrival, then input order]
+    F --> G{Context-switch<br/>overhead configured?}
+    G -- Yes --> H[Record context-switch ticks]
+    G -- No --> I
+    H --> I[Execute one time unit]
+    E -- No --> I
+    I --> J{Remaining burst = 0?}
+    J -- Yes --> K[Mark process completed]
+    J -- No --> L{Round Robin and<br/>quantum expired?}
+    L -- Yes --> M[Return process to ready queue]
+    L -- No --> N
+    K --> N[Advance virtual clock]
+    M --> N
+    D --> N
+    N --> O{All processes<br/>completed?}
+    O -- No --> A
+    O -- Yes --> P([Compute metrics])
+```
+ 
+## Performance Metrics
+| Metric | Definition |
+|---|---|
+| Waiting Time | Time spent in the ready queue |
+| Turnaround Time | Completion time − arrival time |
+| Response Time | First CPU start − arrival time |
+| CPU Utilization | Useful execution time ÷ elapsed time (context switches and idle excluded) |
+| Throughput | Completed processes ÷ elapsed time |
+| Context Switches | Number of CPU context transitions |
+ 
+## Roadmap
+| Component | Status |
+|---|---|
+| Domain types | Complete |
+| Simulation engine with all four policies | Complete |
+| Timeline recorder with tick coalescing | Complete |
+| Metrics computation | Complete |
+| Dashboard shell (header, footer, sidebar, main area, dark theme) | Complete |
+| Simulation hook wired to the engine (run, pause, step, reset) | Complete |
+| Gantt chart component | Complete |
+| Metrics dashboard | Complete |
+| Process input editor | In progress (processes are currently hardcoded) |
+| Algorithm selector | In progress |
+| Algorithm comparison | In progress (placeholder exists, logic pending) |
+| Test suite | In progress (configuration underway) |
+ 
+### Progress Overview
+```mermaid
+flowchart LR
+    subgraph Done["Complete"]
+        D1[Domain types]
+        D2[Engine and four policies]
+        D3[Timeline recorder]
+        D4[Metrics computation]
+        D5[Dashboard shell]
+        D6[Simulation hook]
+        D7[Gantt chart]
+        D8[Metrics dashboard]
+    end
+    subgraph WIP["In progress"]
+        W1[Process input editor]
+        W2[Algorithm selector]
+        W3[Algorithm comparison]
+        W4[Test suite]
+    end
+    Done --> WIP
+    style Done fill:#1f6f43,stroke:#2ea66a,color:#ffffff
+    style WIP fill:#8a5a00,stroke:#d49a1a,color:#ffffff
 ```
 
-## Implementation Roadmap
-Development proceeds in incremental milestones:
-| # | Milestone | Status |
-|---|---|---|
-| 1 | Project setup and process model | Planned |
-| 2 | Simulation engine and FCFS | Planned |
-| 3 | SJF, Round Robin, and Priority | Planned |
-| 4 | Gantt chart and controls | Planned |
-| 5 | Metrics and comparison dashboard | Planned |
-| 6 | Testing, integration, and refinement | Planned |
-
-Team responsibilities are divided across simulation logic, testing, and visualization.
-
-## Expected Outcome
-- Interactive scheduling simulation
-- Visual process execution timeline
-- Correct performance metrics
-- Side-by-side algorithm comparison
-- A clear learning experience for understanding CPU scheduling
-
-## Future Enhancements
-- Preemptive Priority scheduling
-- Shortest Remaining Time First (SRTF)
-- Multi-Level Feedback Queue (MLFQ)
-- Priority aging
-- More detailed step-by-step visualization
-
-## License
-**PROPRIETARY LICENSE** — © 2026 CPU Process Scheduling Simulator Team. All Rights Reserved.
-This project is a university capstone project. This software and associated documentation are proprietary and confidential. No part may be reproduced, distributed, or transmitted in any form without prior written permission from the authors.
-
+Possible later extensions: preemptive Priority, SRTF, MLFQ, priority aging.
+ 
 ---
-
-<div align="center">
-  <strong>Making CPU scheduling easier to understand through simulation and experimentation.</strong>
-</div>
+## License
+**PROPRIETARY LICENSE** — © 2026 Egypt Supply Chain Visibility Team. All Rights Reserved.
+This project is a university capstone project. This software and associated documentation are proprietary and confidential. No part may be reproduced, distributed, or transmitted in any form without prior written permission from the authors.

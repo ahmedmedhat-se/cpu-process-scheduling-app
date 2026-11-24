@@ -1,12 +1,14 @@
-import type { SimulationProcessView } from "../../hooks/useSimulation";
+import type { ProcessInput } from "../../../domain/process";
 
 interface ProcessTableProps {
-  processes: SimulationProcessView[];
+  processes: ProcessInput[];
+  selectedId?: string | null;
+  onSelect?: (id: string) => void;
 }
 
-export function ProcessTable({ processes }: ProcessTableProps) {
+export function ProcessTable({ processes, selectedId, onSelect }: ProcessTableProps) {
   return (
-    <div className="panel">
+    <div className="panel panel--table">
       <div className="panel-header">
         <h2 className="panel-title">Process Queue</h2>
         <span className="panel-badge">{processes.length}</span>
@@ -23,14 +25,27 @@ export function ProcessTable({ processes }: ProcessTableProps) {
               </tr>
             </thead>
             <tbody>
-              {processes.map((process) => (
-                <tr key={process.id}>
-                  <td className="fw-medium">{process.name}</td>
-                  <td className="text-end font-monospace">{process.arrivalTime}</td>
-                  <td className="text-end font-monospace">{process.burstTime}</td>
-                  <td className="text-end font-monospace">{process.priority}</td>
-                </tr>
-              ))}
+              {processes.map((process) => {
+                const isSelected = selectedId === process.id;
+                return (
+                  <tr
+                    key={process.id}
+                    className={isSelected ? "row-selected" : undefined}
+                    onClick={() => onSelect?.(process.id)}
+                    style={{ cursor: onSelect ? "pointer" : "default" }}
+                  >
+                    <td>
+                      <span className="process-name">
+                        <span className="process-dot" />
+                        {process.name}
+                      </span>
+                    </td>
+                    <td className="text-end">{process.arrivalTime}</td>
+                    <td className="text-end">{process.burstTime}</td>
+                    <td className="text-end">{process.priority}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

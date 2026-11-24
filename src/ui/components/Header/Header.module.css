@@ -1,9 +1,10 @@
 .header {
   position: sticky;
   top: 0;
-  z-index: 20;
-  background-color: rgba(19, 28, 46, 0.85);
-  backdrop-filter: blur(12px);
+  z-index: 50;
+  background-color: rgba(8, 9, 10, 0.72);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -12,16 +13,17 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 1600px;
+  max-width: 1520px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 var(--space-5);
   height: 64px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
 .brandMark {
@@ -30,97 +32,163 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, var(--accent-primary), #8b5cf6);
+  border-radius: var(--radius-sm);
+  background: var(--accent-primary);
   color: white;
   font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(94, 106, 210, 0.3), 0 4px 12px rgba(94, 106, 210, 0.25);
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
 }
 
 .brandTitle {
   font-weight: 700;
   font-size: 0.95rem;
   letter-spacing: -0.01em;
+  color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .brandSubtitle {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-tertiary);
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
-.stats {
+.metrics {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: var(--space-5);
+  flex-shrink: 0;
 }
 
-.stat {
+.clock {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-}
-
-.statLabel {
-  font-size: 0.62rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-tertiary);
-  font-weight: 600;
-}
-
-.statValue {
-  font-family: var(--font-mono);
-  font-size: 1.2rem;
-  font-weight: 700;
   line-height: 1.15;
+}
+
+.clockLabel {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+}
+
+.clockValue {
+  font-family: var(--font-mono);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 .divider {
   width: 1px;
-  height: 28px;
-  background-color: var(--border-subtle);
+  height: 32px;
+  background-color: var(--border-default);
 }
 
 .status {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  font-weight: 500;
+  gap: var(--space-2);
 }
 
-.dotActive,
-.dotIdle {
-  width: 7px;
-  height: 7px;
+.statusDot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.dotActive {
+.ready {
+  background-color: var(--text-muted);
+  box-shadow: 0 0 0 3px rgba(138, 143, 152, 0.12);
+}
+
+.running {
   background-color: var(--accent-success);
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+  box-shadow: 0 0 0 3px rgba(39, 166, 68, 0.18);
+  animation: pulse 1.8s ease-in-out infinite;
 }
 
-.dotIdle {
-  background-color: var(--text-tertiary);
+.finished {
+  background-color: var(--accent-warning);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.statusLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .inner {
+    height: 58px;
+    padding: 0 var(--space-4);
+  }
+
+  .brandSubtitle {
+    display: none;
+  }
+
+  .clockValue {
+    font-size: 1.15rem;
+  }
 }
 
 @media (max-width: 640px) {
   .inner {
-    padding: 0 1rem;
+    height: 54px;
+    padding: 0 var(--space-3);
   }
 
-  .stat {
-    display: none;
+  .brandMark {
+    width: 32px;
+    height: 32px;
+    font-size: 0.95rem;
+  }
+
+  .brandTitle {
+    font-size: 0.85rem;
+  }
+
+  .metrics {
+    gap: var(--space-3);
   }
 
   .divider {
     display: none;
   }
 
-  .brandSubtitle {
+  .clockLabel {
+    display: none;
+  }
+
+  .clockValue {
+    font-size: 1rem;
+  }
+
+  .statusLabel {
     display: none;
   }
 }

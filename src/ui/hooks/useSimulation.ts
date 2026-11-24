@@ -14,6 +14,7 @@ const defaultInputs: ProcessInput[] = [
 const defaultConfig: SimulationConfig = {
   algorithm: "fcfs",
   contextSwitchCost: 0,
+  timeQuantum: 2,
 };
 
 const emptyMetrics: AggregateMetrics = {
@@ -31,7 +32,7 @@ const emptyMetrics: AggregateMetrics = {
 
 export interface UseSimulationResult {
   processes: ProcessInput[];
-  algorithm: AlgorithmKind;
+  config: SimulationConfig;
   clock: number;
   timeline: TimelineEntry[];
   metrics: AggregateMetrics;
@@ -41,27 +42,27 @@ export interface UseSimulationResult {
   pause: () => void;
   step: () => void;
   reset: () => void;
+  setAlgorithm: (algorithm: AlgorithmKind) => void;
+  setTimeQuantum: (quantum: number) => void;
+  setContextSwitchCost: (cost: number) => void;
 }
 
 const STEP_INTERVAL_MS = 400;
 
-function createEngine(): SimulationEngine {
-  return new SimulationEngine(defaultInputs, defaultConfig);
-}
-
 export function useSimulation(): UseSimulationResult {
   const engineRef = useRef<SimulationEngine | null>(null);
-  if (engineRef.current === null) {
-    engineRef.current = createEngine();
-  }
-
   const intervalRef = useRef<number | null>(null);
 
+  const [config, setConfig] = useState<SimulationConfig>(defaultConfig);
   const [clock, setClock] = useState(0);
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
   const [metrics, setMetrics] = useState<AggregateMetrics>(emptyMetrics);
   const [isRunning, setIsRunning] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+
+  if (engineRef.current === null) {
+    engineRef.current = new SimulationEngine(defaultInputs, defaultConfig);
+  }
 
   const sync = useCallback(() => {
     const engine = engineRef.current;
@@ -87,15 +88,22 @@ export function useSimulation(): UseSimulationResult {
     return clearTimer;
   }, [clearTimer]);
 
+  const rebuild = useCallback(
+    (nextConfig: SimulationConfig) => {
+      clearTimer();
+      engineRef.current = new SimulationEngine(defaultInputs, nextConfig);
+      setClock(0);
+      setTimeline([]);
+      setMetrics(emptyMetrics);
+      setIsRunning(false);
+      setIsFinished(false);
+    },
+    [clearTimer]
+  );
+
   const reset = useCallback(() => {
-    clearTimer();
-    engineRef.current = createEngine();
-    setClock(0);
-    setTimeline([]);
-    setMetrics(emptyMetrics);
-    setIsRunning(false);
-    setIsFinished(false);
-  }, [clearTimer]);
+    rebuild(config);
+  }, [config, rebuild]);
 
   const step = useCallback(() => {
     const engine = engineRef.current;
@@ -126,9 +134,36 @@ export function useSimulation(): UseSimulationResult {
     setIsRunning(false);
   }, [clearTimer]);
 
+  const setAlgorithm = useCallback(
+    (algorithm: AlgorithmKind) => {
+      const nextConfig = { ...config, algorithm };
+      setConfig(nextConfig);
+      rebuild(nextConfig);
+    },
+    [config, rebuild]
+  );
+
+  const setTimeQuantum = useCallback(
+    (timeQuantum: number) => {
+      const nextConfig = { ...config, timeQuantum };
+      setConfig(nextConfig);
+      rebuild(nextConfig);
+    },
+    [config, rebuild]
+  );
+
+  const setContextSwitchCost = useCallback(
+    (contextSwitchCost: number) => {
+      const nextConfig = { ...config, contextSwitchCost };
+      setConfig(nextConfig);
+      rebuild(nextConfig);
+    },
+    [config, rebuild]
+  );
+
   return {
     processes: defaultInputs,
-    algorithm: defaultConfig.algorithm,
+    config,
     clock,
     timeline,
     metrics,
@@ -138,5 +173,8 @@ export function useSimulation(): UseSimulationResult {
     pause,
     step,
     reset,
+    setAlgorithm,
+    setTimeQuantum,
+    setContextSwitchCost,
   };
 };

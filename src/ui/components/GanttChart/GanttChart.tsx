@@ -1,19 +1,19 @@
-import type { TimelineEntryView } from "../../hooks/useSimulation";
+import type { TimelineEntry } from "../../../domain/timeline";
 import styles from "./GanttChart.module.css";
 
 interface GanttChartProps {
-  timeline: TimelineEntryView[];
+  timeline: TimelineEntry[];
 }
 
 const kinds = {
   run: { color: "var(--accent-primary)", label: "Running" },
-  idle: { color: "var(--surface-elevated)", label: "Idle" },
+  idle: { color: "var(--bg-elevated)", label: "Idle" },
   switch: { color: "var(--accent-warning)", label: "Switch" },
 } as const;
 
 export function GanttChart({ timeline }: GanttChartProps) {
   return (
-    <div className="panel">
+    <div className="panel panel--timeline">
       <div className="panel-header">
         <h2 className="panel-title">Execution Timeline</h2>
         <div className={styles.legend}>

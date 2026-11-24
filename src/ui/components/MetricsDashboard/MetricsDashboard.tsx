@@ -1,8 +1,8 @@
-import type { MetricsView } from "../../hooks/useSimulation";
+import type { AggregateMetrics } from "../../../domain/metrics";
 import styles from "./MetricsDashboard.module.css";
 
 interface MetricsDashboardProps {
-  metrics: MetricsView;
+  metrics: AggregateMetrics;
 }
 
 const items = [
@@ -25,7 +25,7 @@ export function MetricsDashboard({ metrics }: MetricsDashboardProps) {
   };
 
   return (
-    <div className="panel">
+    <div className="panel panel--metrics">
       <div className="panel-header">
         <h2 className="panel-title">Performance Metrics</h2>
       </div>
@@ -44,4 +44,4 @@ export function MetricsDashboard({ metrics }: MetricsDashboardProps) {
       </div>
     </div>
   );
-};
+}
