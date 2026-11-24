@@ -1,0 +1,47 @@
+v.legend {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+}
+
+.swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+
+.track {
+  display: flex;
+  min-height: 52px;
+  gap: 2px;
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
+}
+
+.segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  border-radius: 4px;
+  transition: opacity 0.15s ease;
+}
+
+.segment:hover {
+  opacity: 0.82;
+}
+
+.label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  padding: 0 6px;
+}

@@ -1,0 +1,7 @@
+.controlBar {
+  border-left: 3px solid var(--bs-primary) !important;
+}
+
+.tracking-wide {
+  letter-spacing: 0.05em;
+};
