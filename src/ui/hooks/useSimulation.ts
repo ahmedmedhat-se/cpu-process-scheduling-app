@@ -1,34 +1,41 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { SimulationEngine } from "../../engine/SimulationEngine";
+import type { ProcessInput } from "../../domain/process";
+import type { AlgorithmKind, SimulationConfig } from "../../domain/simulation";
+import type { AggregateMetrics } from "../../domain/metrics";
+import type { TimelineEntry } from "../../domain/timeline";
 
-export interface SimulationProcessView {
-  id: string;
-  name: string;
-  arrivalTime: number;
-  burstTime: number;
-  priority: number;
-}
+const defaultInputs: ProcessInput[] = [
+  { id: "p1", name: "P1", arrivalTime: 0, burstTime: 5, priority: 2 },
+  { id: "p2", name: "P2", arrivalTime: 1, burstTime: 3, priority: 1 },
+  { id: "p3", name: "P3", arrivalTime: 2, burstTime: 4, priority: 3 },
+];
 
-export interface TimelineEntryView {
-  startTime: number;
-  endTime: number;
-  processId: string | null;
-  kind: "run" | "idle" | "switch";
-}
+const defaultConfig: SimulationConfig = {
+  algorithm: "fcfs",
+  contextSwitchCost: 0,
+};
 
-export interface MetricsView {
-  averageWaitingTime: number;
-  averageTurnaroundTime: number;
-  averageResponseTime: number;
-  cpuUtilization: number;
-  throughput: number;
-  contextSwitches: number;
-}
+const emptyMetrics: AggregateMetrics = {
+  perProcess: [],
+  averageWaitingTime: 0,
+  averageTurnaroundTime: 0,
+  averageResponseTime: 0,
+  cpuUtilization: 0,
+  throughput: 0,
+  contextSwitches: 0,
+  idleTime: 0,
+  switchTime: 0,
+  totalTime: 0,
+};
 
 export interface UseSimulationResult {
-  processes: SimulationProcessView[];
+  processes: ProcessInput[];
+  algorithm: AlgorithmKind;
   clock: number;
-  timeline: TimelineEntryView[];
-  metrics: MetricsView;
+  timeline: TimelineEntry[];
+  metrics: AggregateMetrics;
+  isRunning: boolean;
   isFinished: boolean;
   run: () => void;
   pause: () => void;
@@ -36,32 +43,100 @@ export interface UseSimulationResult {
   reset: () => void;
 }
 
-const initialProcesses: SimulationProcessView[] = [
-  { id: "p1", name: "P1", arrivalTime: 0, burstTime: 5, priority: 2 },
-  { id: "p2", name: "P2", arrivalTime: 1, burstTime: 3, priority: 1 },
-  { id: "p3", name: "P3", arrivalTime: 2, burstTime: 4, priority: 3 },
-];
+const STEP_INTERVAL_MS = 400;
 
-const initialMetrics: MetricsView = {
-  averageWaitingTime: 0,
-  averageTurnaroundTime: 0,
-  averageResponseTime: 0,
-  cpuUtilization: 0,
-  throughput: 0,
-  contextSwitches: 0,
-};
+function createEngine(): SimulationEngine {
+  return new SimulationEngine(defaultInputs, defaultConfig);
+}
 
 export function useSimulation(): UseSimulationResult {
-  const [processes] = useState<SimulationProcessView[]>(initialProcesses);
+  const engineRef = useRef<SimulationEngine | null>(null);
+  if (engineRef.current === null) {
+    engineRef.current = createEngine();
+  }
+
+  const intervalRef = useRef<number | null>(null);
+
   const [clock, setClock] = useState(0);
-  const [timeline] = useState<TimelineEntryView[]>([]);
-  const [metrics] = useState<MetricsView>(initialMetrics);
-  const [isFinished] = useState(false);
+  const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
+  const [metrics, setMetrics] = useState<AggregateMetrics>(emptyMetrics);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
 
-  const run = useCallback(() => {}, []);
-  const pause = useCallback(() => {}, []);
-  const step = useCallback(() => setClock((value) => value + 1), []);
-  const reset = useCallback(() => setClock(0), []);
+  const sync = useCallback(() => {
+    const engine = engineRef.current;
+    if (!engine) return;
+    const state = engine.getState();
+    setClock(state.clock);
+    setTimeline(state.timeline.entries);
+    setMetrics(engine.getMetrics());
+    setIsFinished(state.finished);
+    if (state.finished) {
+      setIsRunning(false);
+    }
+  }, []);
 
-  return { processes, clock, timeline, metrics, isFinished, run, pause, step, reset };
+  const clearTimer = useCallback(() => {
+    if (intervalRef.current !== null) {
+      window.clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return clearTimer;
+  }, [clearTimer]);
+
+  const reset = useCallback(() => {
+    clearTimer();
+    engineRef.current = createEngine();
+    setClock(0);
+    setTimeline([]);
+    setMetrics(emptyMetrics);
+    setIsRunning(false);
+    setIsFinished(false);
+  }, [clearTimer]);
+
+  const step = useCallback(() => {
+    const engine = engineRef.current;
+    if (!engine) return;
+    engine.step();
+    sync();
+  }, [sync]);
+
+  const run = useCallback(() => {
+    if (intervalRef.current !== null) return;
+    setIsRunning(true);
+
+    intervalRef.current = window.setInterval(() => {
+      const engine = engineRef.current;
+      if (!engine) return;
+      engine.step();
+      sync();
+
+      if (engine.getState().finished) {
+        clearTimer();
+        setIsRunning(false);
+      }
+    }, STEP_INTERVAL_MS);
+  }, [sync, clearTimer]);
+
+  const pause = useCallback(() => {
+    clearTimer();
+    setIsRunning(false);
+  }, [clearTimer]);
+
+  return {
+    processes: defaultInputs,
+    algorithm: defaultConfig.algorithm,
+    clock,
+    timeline,
+    metrics,
+    isRunning,
+    isFinished,
+    run,
+    pause,
+    step,
+    reset,
+  };
 };
