@@ -320,7 +320,7 @@ flowchart LR
     style H fill:#1f6f43,stroke:#2ea66a,color:#ffffff
     style U fill:#1f6f43,stroke:#2ea66a,color:#ffffff
     style V fill:#1f6f43,stroke:#2ea66a,color:#ffffff
-    style X fill:#555555,stroke:#999999,color:#ffffff
+    style X fill:#1f6f43,stroke:#2ea66a,color:#ffffff
 ```
 
 Green nodes are complete; the grey node is planned.
@@ -342,11 +342,9 @@ flowchart BT
     M --> UI["UI<br/>presentation only"]
     style P fill:#1f6f43,stroke:#2ea66a,color:#ffffff
     style EN fill:#1f6f43,stroke:#2ea66a,color:#ffffff
-    style M fill:#8a5a00,stroke:#d49a1a,color:#ffffff
-    style UI fill:#555555,stroke:#999999,color:#ffffff
+    style M fill:#1f6f43,stroke:#2ea66a,color:#ffffff
+    style UI fill:#1f6f43,stroke:#2ea66a,color:#ffffff
 ```
-
-Green layers have tests, amber has no dedicated suite listed, and grey is not covered by automated tests.
 
 ## Design Decisions
 | Decision | Reasoning |
