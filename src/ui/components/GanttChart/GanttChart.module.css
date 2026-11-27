@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-tertiary);
 }
 
@@ -40,33 +40,26 @@
   transition: opacity 150ms ease-out, box-shadow 150ms ease-out;
 }
 
-.segment:hover {
-  opacity: 0.85;
-}
+.segment:hover { opacity: 0.85; }
 
 .segmentLive {
-  box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.5), 0 0 12px rgba(94, 106, 210, 0.3);
+  box-shadow: 0 0 0 2px oklch(0.72 0.12 190 / 0.5), 0 0 12px oklch(0.72 0.12 190 / 0.3);
   animation: segment-pulse 1.8s ease-in-out infinite;
 }
 
 @keyframes segment-pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.5), 0 0 12px rgba(94, 106, 210, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.7), 0 0 18px rgba(94, 106, 210, 0.5);
-  }
+  0%, 100% { box-shadow: 0 0 0 2px oklch(0.72 0.12 190 / 0.5), 0 0 12px oklch(0.72 0.12 190 / 0.3); }
+  50% { box-shadow: 0 0 0 2px oklch(0.72 0.12 190 / 0.7), 0 0 18px oklch(0.72 0.12 190 / 0.5); }
 }
 
 .label {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: white;
+  color: var(--bg-base);
   white-space: nowrap;
   padding: 0 var(--space-1);
 }
 
-/* Time axis */
 .axis {
   display: flex;
   align-items: flex-start;
@@ -88,7 +81,7 @@
   transform: translateX(-50%);
   padding-left: 4px;
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 500;
   color: var(--text-tertiary);
   font-variant-numeric: tabular-nums;
@@ -110,12 +103,20 @@
   position: absolute;
   top: 0;
   left: 0;
-  transform: translateX(0);
   padding-left: 2px;
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 500;
   color: var(--text-tertiary);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .track { min-height: 40px; }
+  .segment { min-width: 36px; }
+  .label { font-size: 0.64rem; }
+  .tickLabel,
+  .tickEnd .tickLabel { font-size: 0.58rem; }
+  .legendItem { font-size: 0.64rem; }
 }

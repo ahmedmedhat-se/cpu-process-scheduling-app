@@ -12,29 +12,34 @@
   max-width: 1520px;
   margin: 0 auto;
   padding: 0 var(--space-5);
-  height: 48px;
-  font-size: 0.72rem;
+  height: 44px;
+  font-size: 0.7rem;
   color: var(--text-tertiary);
 }
 
 .left {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: var(--space-2);
 }
 
 .lab {
+  font-size: 0.68rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .sep {
   color: var(--text-muted);
+  font-size: 0.68rem;
 }
 
 .version {
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-size: 0.62rem;
+  color: var(--text-muted);
 }
 
 .right {
@@ -47,9 +52,9 @@
   align-items: center;
   gap: var(--space-2);
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
 }
 
 .tickDot {
@@ -57,33 +62,17 @@
   height: 5px;
   border-radius: 50%;
   background-color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .tickDot[data-finished="true"] {
-  background-color: var(--accent-warning);
+  background-color: var(--accent-success);
 }
 
-/* Responsive */
 @media (max-width: 640px) {
-  .inner {
-    height: 42px;
-    padding: 0 var(--space-3);
-    font-size: 0.65rem;
-  }
-
-  .lab {
-    display: none;
-  }
-
-  .sep {
-    display: none;
-  }
-
-  .version {
-    font-size: 0.62rem;
-  }
-
-  .tick {
-    font-size: 0.62rem;
-  }
+  .inner { height: 38px; padding: 0 var(--space-3); font-size: 0.64rem; }
+  .lab { display: none; }
+  .sep { display: none; }
+  .version { font-size: 0.6rem; }
+  .tick { font-size: 0.6rem; }
 }

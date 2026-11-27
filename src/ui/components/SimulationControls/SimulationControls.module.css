@@ -9,7 +9,7 @@
 }
 
 .speedLabel {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -35,13 +35,18 @@
   cursor: pointer;
   transition: background-color 120ms ease-out, color 120ms ease-out;
   text-transform: capitalize;
+  font-family: var(--font-sans);
 }
 
-.speedButton:hover {
-  color: var(--text-primary);
-}
+.speedButton:hover { color: var(--text-primary); }
 
 .speedActive {
   background-color: var(--bg-elevated);
-  color: var(--text-primary);
+  color: var(--accent-primary);
+}
+
+@media (max-width: 480px) {
+  .speedRow { flex-direction: column; align-items: flex-start; }
+  .speedGroup { width: 100%; }
+  .speedButton { flex: 1; }
 }

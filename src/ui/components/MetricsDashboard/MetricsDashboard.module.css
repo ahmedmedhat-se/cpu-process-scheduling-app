@@ -24,22 +24,29 @@
 }
 
 .icon {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--accent-primary);
   margin-bottom: var(--space-2);
 }
 
 .label {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--text-tertiary);
   margin-bottom: 4px;
 }
 
 .value {
   font-family: var(--font-mono);
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 600;
   line-height: 1.25;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .grid { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: var(--space-2); }
+  .card { padding: var(--space-2); }
+  .value { font-size: 0.95rem; }
+  .label { font-size: 0.62rem; }
 }
