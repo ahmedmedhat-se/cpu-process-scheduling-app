@@ -18,24 +18,37 @@ function average(values: number[]): number {
   return values.length === 0 ? 0 : values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-export function computeMetrics({ processes, timeline, contextSwitches }: ComputeMetricsInput): AggregateMetrics {
+export function computeMetrics({
+  processes,
+  timeline,
+  contextSwitches,
+}: ComputeMetricsInput): AggregateMetrics {
   const perProcess: ProcessMetrics[] = processes
-    .filter((process) => process.completionTime !== undefined && process.firstStartTime !== undefined)
+    .filter(
+      (process) =>
+        process.completionTime !== undefined && process.firstStartTime !== undefined
+    )
     .map((process) => {
-      const { arrivalTime, burstTime } = process.input;
+      const { id, name, arrivalTime, burstTime } = process.input;
       const completionTime = process.completionTime as number;
       const firstStartTime = process.firstStartTime as number;
       return {
-        processId: process.input.id,
+        processId: id,
+        name,
+        arrivalTime,
+        burstTime,
+        firstStartTime,
+        completionTime,
         turnaroundTime: completionTime - arrivalTime,
         waitingTime: completionTime - arrivalTime - burstTime,
         responseTime: firstStartTime - arrivalTime,
       };
     });
 
-  const totalTime = timeline.entries.length > 0
-    ? timeline.entries[timeline.entries.length - 1].endTime
-    : 0;
+  const totalTime =
+    timeline.entries.length > 0
+      ? timeline.entries[timeline.entries.length - 1].endTime
+      : 0;
 
   const runTime = sumDuration(timeline, "run");
   const idleTime = sumDuration(timeline, "idle");

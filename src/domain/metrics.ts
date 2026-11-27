@@ -2,6 +2,11 @@ import type { ProcessId } from "./process";
 
 export interface ProcessMetrics {
   processId: ProcessId;
+  name: string;
+  arrivalTime: number;
+  burstTime: number;
+  firstStartTime: number;
+  completionTime: number;
   waitingTime: number;
   turnaroundTime: number;
   responseTime: number;

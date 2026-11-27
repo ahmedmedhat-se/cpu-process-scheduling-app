@@ -5,6 +5,7 @@ import { ProcessTable } from "../components/ProcessTable/ProcessTable";
 import { SimulationControls } from "../components/SimulationControls/SimulationControls";
 import { AlgorithmSelector } from "../components/AlgorithmSelector/AlgorithmSelector";
 import { GanttChart } from "../components/GanttChart/GanttChart";
+import { ProcessMetricsTable } from "../components/ProcessMetricsTable/ProcessMetricsTable";
 import { MetricsDashboard } from "../components/MetricsDashboard/MetricsDashboard";
 import { ComparisonView } from "../components/ComparisonView/ComparisonView";
 import "../../dashboard.css";
@@ -13,7 +14,9 @@ export function App() {
   const {
     processes,
     config,
+    speed,
     clock,
+    runningId,
     timeline,
     metrics,
     isRunning,
@@ -25,6 +28,7 @@ export function App() {
     setAlgorithm,
     setTimeQuantum,
     setContextSwitchCost,
+    setSpeed,
     addProcess,
     updateProcess,
     removeProcess,
@@ -42,10 +46,12 @@ export function App() {
             <SimulationControls
               isRunning={isRunning}
               isFinished={isFinished}
+              speed={speed}
               onRun={run}
               onPause={pause}
               onStep={step}
               onReset={reset}
+              onSpeedChange={setSpeed}
             />
             <AlgorithmSelector
               config={config}
@@ -56,6 +62,7 @@ export function App() {
             />
             <ProcessTable
               processes={processes}
+              runningId={runningId}
               isLocked={configLocked}
               onAdd={addProcess}
               onUpdate={updateProcess}
@@ -64,7 +71,8 @@ export function App() {
           </aside>
 
           <main className="dashboard-column">
-            <GanttChart timeline={timeline} />
+            <GanttChart timeline={timeline} runningId={runningId} />
+            <ProcessMetricsTable metrics={metrics.perProcess} />
             <div className="dashboard-row">
               <MetricsDashboard metrics={metrics} />
               <ComparisonView processes={processes} config={config} />

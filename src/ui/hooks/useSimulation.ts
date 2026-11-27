@@ -30,10 +30,20 @@ const emptyMetrics: AggregateMetrics = {
   totalTime: 0,
 };
 
+export type SimulationSpeed = "slow" | "normal" | "fast";
+
+const SPEED_INTERVALS: Record<SimulationSpeed, number> = {
+  slow: 800,
+  normal: 400,
+  fast: 150,
+};
+
 export interface UseSimulationResult {
   processes: ProcessInput[];
   config: SimulationConfig;
+  speed: SimulationSpeed;
   clock: number;
+  runningId: string | null;
   timeline: TimelineEntry[];
   metrics: AggregateMetrics;
   isRunning: boolean;
@@ -45,13 +55,12 @@ export interface UseSimulationResult {
   setAlgorithm: (algorithm: AlgorithmKind) => void;
   setTimeQuantum: (quantum: number) => void;
   setContextSwitchCost: (cost: number) => void;
+  setSpeed: (speed: SimulationSpeed) => void;
   addProcess: () => void;
   updateProcess: (id: string, patch: Partial<Omit<ProcessInput, "id" | "name">>) => void;
   removeProcess: (id: string) => void;
   resetProcesses: () => void;
 }
-
-const STEP_INTERVAL_MS = 400;
 
 function nextProcessName(processes: ProcessInput[]): string {
   const used = new Set(processes.map((p) => p.name));
@@ -66,7 +75,9 @@ export function useSimulation(): UseSimulationResult {
 
   const [processes, setProcesses] = useState<ProcessInput[]>(seedProcesses);
   const [config, setConfig] = useState<SimulationConfig>(defaultConfig);
+  const [speed, setSpeedState] = useState<SimulationSpeed>("normal");
   const [clock, setClock] = useState(0);
+  const [runningId, setRunningId] = useState<string | null>(null);
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
   const [metrics, setMetrics] = useState<AggregateMetrics>(emptyMetrics);
   const [isRunning, setIsRunning] = useState(false);
@@ -81,6 +92,7 @@ export function useSimulation(): UseSimulationResult {
     if (!engine) return;
     const state = engine.getState();
     setClock(state.clock);
+    setRunningId(state.runningId);
     setTimeline(state.timeline.entries);
     setMetrics(engine.getMetrics());
     setIsFinished(state.finished);
@@ -105,6 +117,7 @@ export function useSimulation(): UseSimulationResult {
       clearTimer();
       engineRef.current = new SimulationEngine(nextProcesses, nextConfig);
       setClock(0);
+      setRunningId(null);
       setTimeline([]);
       setMetrics(emptyMetrics);
       setIsRunning(false);
@@ -138,8 +151,8 @@ export function useSimulation(): UseSimulationResult {
         clearTimer();
         setIsRunning(false);
       }
-    }, STEP_INTERVAL_MS);
-  }, [sync, clearTimer]);
+    }, SPEED_INTERVALS[speed]);
+  }, [sync, clearTimer, speed]);
 
   const pause = useCallback(() => {
     clearTimer();
@@ -172,6 +185,10 @@ export function useSimulation(): UseSimulationResult {
     },
     [config, processes, rebuild]
   );
+
+  const setSpeed = useCallback((next: SimulationSpeed) => {
+    setSpeedState(next);
+  }, []);
 
   const addProcess = useCallback(() => {
     setProcesses((prev) => {
@@ -220,7 +237,9 @@ export function useSimulation(): UseSimulationResult {
   return {
     processes,
     config,
+    speed,
     clock,
+    runningId,
     timeline,
     metrics,
     isRunning,
@@ -232,6 +251,7 @@ export function useSimulation(): UseSimulationResult {
     setAlgorithm,
     setTimeQuantum,
     setContextSwitchCost,
+    setSpeed,
     addProcess,
     updateProcess,
     removeProcess,

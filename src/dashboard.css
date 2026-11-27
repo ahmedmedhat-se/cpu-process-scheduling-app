@@ -332,3 +332,36 @@
   background-color: var(--bg-surface);
   color: var(--text-primary);
 }
+
+/* Running process row */
+.table-dashboard tbody tr.row-running td {
+  background-color: rgba(39, 166, 68, 0.1);
+  color: var(--text-primary);
+}
+
+.table-dashboard tbody tr.row-running td:first-child {
+  box-shadow: inset 2px 0 0 var(--accent-success);
+}
+
+.table-dashboard tbody tr.row-running:hover td {
+  background-color: rgba(39, 166, 68, 0.16);
+}
+
+.table-dashboard tbody tr.row-running.row-selected td {
+  background-color: rgba(94, 106, 210, 0.14);
+}
+
+.table-dashboard tbody tr.row-running.row-selected td:first-child {
+  box-shadow: inset 2px 0 0 var(--accent-success);
+}
+
+.process-dot-running {
+  background-color: var(--accent-success) !important;
+  box-shadow: 0 0 0 3px rgba(39, 166, 68, 0.2);
+  animation: pulse-run 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse-run {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}

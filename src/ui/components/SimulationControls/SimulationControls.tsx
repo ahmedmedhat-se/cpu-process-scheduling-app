@@ -1,19 +1,28 @@
+import type { SimulationSpeed } from "../../hooks/useSimulation";
+import styles from "./SimulationControls.module.css";
+
 interface SimulationControlsProps {
   isRunning: boolean;
   isFinished: boolean;
+  speed: SimulationSpeed;
   onRun: () => void;
   onPause: () => void;
   onStep: () => void;
   onReset: () => void;
+  onSpeedChange: (speed: SimulationSpeed) => void;
 }
+
+const speeds: SimulationSpeed[] = ["slow", "normal", "fast"];
 
 export function SimulationControls({
   isRunning,
   isFinished,
+  speed,
   onRun,
   onPause,
   onStep,
   onReset,
+  onSpeedChange,
 }: SimulationControlsProps) {
   return (
     <div className="panel panel--controls">
@@ -49,6 +58,22 @@ export function SimulationControls({
           >
             <i className="bi bi-arrow-counterclockwise" /> Reset
           </button>
+        </div>
+
+        <div className={styles.speedRow}>
+          <span className={styles.speedLabel}>Speed</span>
+          <div className={styles.speedGroup}>
+            {speeds.map((option) => (
+              <button
+                key={option}
+                type="button"
+                className={`${styles.speedButton} ${speed === option ? styles.speedActive : ""}`}
+                onClick={() => onSpeedChange(option)}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
