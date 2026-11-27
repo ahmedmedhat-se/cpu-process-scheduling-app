@@ -4,6 +4,7 @@ import styles from "./ProcessTable.module.css";
 interface ProcessTableProps {
   processes: ProcessInput[];
   selectedId?: string | null;
+  runningId?: string | null;
   isLocked?: boolean;
   onSelect?: (id: string) => void;
   onAdd?: () => void;
@@ -14,6 +15,7 @@ interface ProcessTableProps {
 export function ProcessTable({
   processes,
   selectedId,
+  runningId,
   isLocked = false,
   onSelect,
   onAdd,
@@ -69,16 +71,23 @@ export function ProcessTable({
               ) : (
                 processes.map((process) => {
                   const isSelected = selectedId === process.id;
+                  const isRunning = runningId === process.id;
+                  const rowClass = [
+                    isSelected ? "row-selected" : "",
+                    isRunning ? "row-running" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ");
                   return (
                     <tr
                       key={process.id}
-                      className={isSelected ? "row-selected" : undefined}
+                      className={rowClass || undefined}
                       onClick={() => onSelect?.(process.id)}
                       style={{ cursor: onSelect ? "pointer" : "default" }}
                     >
                       <td>
                         <span className="process-name">
-                          <span className="process-dot" />
+                          <span className={isRunning ? "process-dot process-dot-running" : "process-dot"} />
                           {process.name}
                         </span>
                       </td>
