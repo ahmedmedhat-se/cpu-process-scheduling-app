@@ -1,45 +1,84 @@
-.processCell {
+.headerActions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
-.processDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: var(--accent-primary);
-  flex-shrink: 0;
+.headerActions .btn-dashboard {
+  padding: 4px 10px;
+  font-size: 0.75rem;
 }
 
-.processName {
-  font-weight: 500;
+.cellInput {
+  width: 56px;
+  padding: 4px 8px;
+  background-color: var(--bg-base);
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
   color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  transition: border-color 120ms ease-out;
 }
 
-.priorityBadge {
+.cellInput:hover:not(:disabled) {
+  border-color: var(--border-strong);
+}
+
+.cellInput:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.2);
+}
+
+.cellInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cellInput::-webkit-outer-spin-button,
+.cellInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.cellInput[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.removeButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 28px;
-  padding: 2px 8px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background-color: transparent;
+  border: 1px solid transparent;
   border-radius: 4px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-.priorityHigh {
-  background-color: rgba(94, 106, 210, 0.15);
-  color: #a5b4fc;
-}
-
-.priorityMedium {
-  background-color: rgba(245, 158, 11, 0.12);
-  color: #fbbf24;
-}
-
-.priorityLow {
-  background-color: rgba(138, 143, 152, 0.12);
   color: var(--text-tertiary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 120ms ease-out, background-color 120ms ease-out, border-color 120ms ease-out;
+}
+
+.removeButton:hover:not(:disabled) {
+  color: var(--accent-danger);
+  background-color: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.removeButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.emptyRow {
+  text-align: center !important;
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  padding: var(--space-6) var(--space-4) !important;
 }

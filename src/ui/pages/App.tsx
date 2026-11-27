@@ -25,6 +25,9 @@ export function App() {
     setAlgorithm,
     setTimeQuantum,
     setContextSwitchCost,
+    addProcess,
+    updateProcess,
+    removeProcess,
   } = useSimulation();
 
   const configLocked = isRunning || clock > 0;
@@ -51,7 +54,13 @@ export function App() {
               onTimeQuantumChange={setTimeQuantum}
               onContextSwitchCostChange={setContextSwitchCost}
             />
-            <ProcessTable processes={processes} />
+            <ProcessTable
+              processes={processes}
+              isLocked={configLocked}
+              onAdd={addProcess}
+              onUpdate={updateProcess}
+              onRemove={removeProcess}
+            />
           </aside>
 
           <main className="dashboard-column">
